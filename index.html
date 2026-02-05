@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RALPH HERNANDEZ | CLASSIFIED</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05080a;
+            --accent: #00f2ff;
+            --accent-dim: rgba(0, 242, 255, 0.15);
+            --danger: #ff3e3e;
+            --text: #c2d1d9;
+        }
+ 
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        body { background: var(--bg); color: var(--text); font-family: 'Share Tech Mono', monospace; overflow: hidden; height: 100vh; }
+ 
+        /* --- BACKGROUND EFFECTS --- */
+        #map-bg { position: fixed; inset: 0; z-index: -1; opacity: 0.2; }
+        .scanlines { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 8px; z-index: 1000; pointer-events: none; }
+ 
+        /* --- INIT SCREEN --- */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .bar-container { width: 300px; height: 2px; background: #111; margin-top: 20px; }
+        #bar { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+ 
+        /* --- DASHBOARD LAYOUT --- */
+        #dashboard { display: none; height: 100vh; padding: 20px; grid-template-columns: 350px 1fr 300px; grid-template-rows: 60px 1fr; gap: 15px; opacity: 0; transition: 1s; }
+        header { grid-column: 1 / -1; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
+ 
+        .panel { background: rgba(10, 15, 20, 0.9); border: 1px solid var(--accent-dim); padding: 20px; position: relative; overflow-y: auto; }
+        .panel-header { color: var(--accent); font-size: 0.8rem; border-bottom: 1px solid var(--accent-dim); margin-bottom: 15px; padding-bottom: 5px; display: flex; justify-content: space-between; }
+ 
+        /* --- ANIMATIONS --- */
+        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } 100% { transform: translateX(0); } }
+ 
+        /* --- CARDS & BUTTONS --- */
+        .card { background: rgba(255,255,255,0.03); border: 1px solid #222; padding: 15px; margin-bottom: 15px; transition: 0.3s; }
+        .card:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.05); transform: scale(1.02); }
+ 
+        button { 
+            background: transparent; border: 1px solid var(--accent); color: var(--accent); 
+            padding: 8px 12px; font-family: inherit; font-size: 0.7rem; cursor: pointer; transition: 0.2s;
+            text-transform: uppercase; margin-top: 10px; width: 100%;
+        }
+        button:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); }
+        button:active { transform: translateY(2px); }
+ 
+        /* --- TERMINAL --- */
+        #console { font-size: 0.75rem; color: #00ff00; line-height: 1.4; }
+        .typing::after { content: "_"; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+ 
+        /* --- MODAL --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 2px solid var(--accent); padding: 30px; max-width: 80%; max-height: 80%; overflow-y: auto; }
+        .modal-header { color: var(--accent); font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
+        .close { position: absolute; top: 10px; right: 15px; color: var(--accent); font-size: 28px; cursor: pointer; }
+        .close:hover { color: #fff; }
+
+        /* --- UTILS --- */
+        .hidden { display: none !important; }
+        .visible { display: grid !important; opacity: 1 !important; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); }
+    </style>
+</head>
+<body>
+ 
+    <div class="scanlines"></div>
+    <canvas id="map-bg"></canvas>
+ 
+    <div id="loader">
+        <div id="load-msg" style="color: var(--accent); letter-spacing: 5px;">INITIALIZING_PROTOCOL</div>
+        <div class="bar-container"><div id="bar"></div></div>
+        <div id="status-log" style="font-size: 0.6rem; color: #444;">SYS_BOOT_SEQUENCE_V.4.0</div>
+    </div>
+ 
+    <div id="dashboard">
+        <header>
+            <div id="agent-name" style="font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: 700;"></div>
+            <div style="font-size: 0.7rem; color: var(--accent);">STATUS: <span style="animation: flicker 1s infinite;">OPERATIONAL</span></div>
+        </header>
+ 
+        <aside class="panel">
+            <div class="panel-header"><span>AGENT_BRIEFING</span><span>ID: 8821-M</span></div>
+            <div class="card">
+                <img src="img/Black and Red Simple Minimalsit Formal Facebook Profile Picture.png" alt="Profile" style="width: 100%; border-radius: 5px; border: 2px solid var(--accent); margin-bottom: 15px; cursor: pointer;" onclick="displayImageInConsole()">
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">SUBJECT: RALPH HERNANDEZ</p>
+                <p style="font-size: 0.75rem; color: #888;">3rd Year IT Student specializing in web development and database systems.</p>
+                <button onclick="showModal('personal')">PERSONAL_INFO</button>
+                <button onclick="showModal('certifications')">CERTIFICATIONS</button>
+            </div>
+ 
+            <div class="panel-header"><span>TECH_ARSENAL</span></div>
+            <div class="card">
+                <div style="font-size: 0.7rem;">JAVA/WEB DEV <span style="float:right">75%</span></div>
+                <div style="width:100%; height:3px; background:#111; margin:8px 0;"><div style="width:75%; height:100%; background:var(--accent);"></div></div>
+                <div style="font-size: 0.7rem;">PHP/MYSQL <span style="float:right">70%</span></div>
+                <div style="width:100%; height:3px; background:#111; margin:8px 0;"><div style="width:70%; height:100%; background:var(--accent);"></div></div>
+                <button onclick="showModal('skills')">FULL_SKILLS</button>
+            </div>
+        </aside>
+ 
+        <main class="panel">
+            <div class="panel-header"><span>ACTIVE_MISSIONS</span><span>ENCRYPTED_FILES</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="card">
+                    <h4 style="color: var(--accent);">STUDENT PORTAL</h4>
+                    <p style="font-size: 0.7rem; color: #666; margin: 10px 0;">Web-based student information system.</p>
+                    <button onclick="showModal('projects')">VIEW_PROJECTS</button>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--accent);">INVENTORY SYSTEM</h4>
+                    <p style="font-size: 0.7rem; color: #666; margin: 10px 0;">Database-driven inventory management system.</p>
+                    <button onclick="showModal('projects')">VIEW_PROJECTS</button>
+                </div>
+            </div>
+ 
+            <div class="panel-header" style="margin-top: 20px;"><span>SECURE_TRANSMISSION</span></div>
+            <div class="card">
+                <input type="text" id="contact-name" placeholder="SIGNAL_ID" style="width: 100%; background: #000; border: 1px solid #222; color: var(--accent); padding: 10px; margin-bottom: 10px; font-family: inherit;">
+                <textarea id="contact-msg" placeholder="ENCRYPTED_MESSAGE" style="width: 100%; background: #000; border: 1px solid #222; color: var(--accent); padding: 10px; height: 60px; font-family: inherit;"></textarea>
+                <button onclick="sendSignal()">BROADCAST_SIGNAL</button>
+            </div>
+        </main>
+ 
+        <aside class="panel">
+            <div class="panel-header"><span>SYSTEM_CONSOLE</span></div>
+            <div id="console" class="typing">Awaiting input...</div>
+ 
+            <div style="position: absolute; bottom: 20px; left: 20px; right: 20px;">
+                <button onclick="location.href='resume.html'" style="border-style: dashed;">📥 DOWNLOAD_RESUME</button>
+                <button id="download-img-btn" onclick="downloadImage()" style="border-style: dashed; display: none; margin-top: 5px;">📥 DOWNLOAD_IMAGE</button>
+                <button onclick="selfDestruct()" style="border-color: var(--danger); color: var(--danger); margin-top: 5px;">TERMINATE_SESSION</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MODALS -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header" id="modal-title"></div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+ 
+    <script>
+        const bar = document.getElementById('bar');
+        const status = document.getElementById('status-log');
+        const consoleEl = document.getElementById('console');
+ 
+        // 1. Loading Animation
+        let progress = 0;
+        const loadInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) {
+                progress = 100;
+                clearInterval(loadInterval);
+                document.getElementById('load-msg').innerText = "ACCESS_GRANTED";
+                setTimeout(launchDashboard, 800);
+            }
+            bar.style.width = progress + "%";
+            status.innerText = `FETCHING_CORE_DATA... ${Math.floor(progress)}%`;
+        }, 150);
+ 
+        function launchDashboard() {
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('visible');
+            decodeName("RALPH HERNANDEZ");
+        }
+ 
+        // 2. Decoder Effect
+        function decodeName(name) {
+            let i = 0;
+            const target = document.getElementById('agent-name');
+            const chars = "X01#$&";
+            const interval = setInterval(() => {
+                target.innerText = name.split('').map((c, index) => {
+                    if (index < i) return name[index];
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join('');
+                if (i >= name.length) clearInterval(interval);
+                i += 0.5;
+            }, 50);
+        }
+ 
+        // 3. Terminal Typewriter Function
+        function termEffect(text) {
+            consoleEl.innerHTML = "";
+            let i = 0;
+            const type = setInterval(() => {
+                consoleEl.innerHTML += text[i] === "\n" ? "<br>> " : text[i];
+                i++;
+                if (i >= text.length) clearInterval(type);
+            }, 20);
+        }
+ 
+        // 4. Button Actions
+        function sendSignal() {
+            const name = document.getElementById('contact-name').value;
+            if(!name) return termEffect("ERROR: SIGNAL_ID_MISSING");
+            termEffect(`SENDING SIGNAL... \nFROM: ${name} \nENCRYPTING... \nSENT_SUCCESSFULLY.`);
+        }
+ 
+        function selfDestruct() {
+            if(confirm("DANGER: WIPE ALL DATA?")) {
+                document.body.style.animation = "shake 0.1s infinite";
+                document.body.style.filter = "invert(1) sepia(1) saturate(5) hue-rotate(300deg)";
+                setTimeout(() => {
+                    document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20vh; font-size:4rem;'>CONNECTION LOST</h1>";
+                }, 1500);
+            }
+        }
+ 
+        // 5. Image Display Function
+        let imageEnlarged = false;
+        
+        function displayImageInConsole() {
+            const imgPath = "img/Black and Red Simple Minimalsit Formal Facebook Profile Picture.png";
+            consoleEl.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="color: var(--accent); margin-bottom: 10px;">PROFILE_IMAGE_LOADED</div>
+                    <img id="console-img" src="${imgPath}" style="max-width: 100%; max-height: 300px; border: 1px solid var(--accent); border-radius: 5px; cursor: pointer; transition: 0.3s;" onclick="toggleImageSize()">
+                    <div style="color: #888; font-size: 0.6rem; margin-top: 10px;">IMAGE_READY_FOR_DOWNLOAD | CLICK TO ENLARGE</div>
+                </div>
+            `;
+            document.getElementById('download-img-btn').style.display = 'block';
+            imageEnlarged = false;
+        }
+        
+        function toggleImageSize() {
+            const img = document.getElementById('console-img');
+            if (!imageEnlarged) {
+                img.style.maxWidth = '90vw';
+                img.style.maxHeight = '90vh';
+                img.style.position = 'fixed';
+                img.style.top = '50%';
+                img.style.left = '50%';
+                img.style.transform = 'translate(-50%, -50%)';
+                img.style.zIndex = '2000';
+                img.style.background = '#000';
+                img.style.padding = '10px';
+                imageEnlarged = true;
+            } else {
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '300px';
+                img.style.position = 'static';
+                img.style.transform = 'none';
+                img.style.zIndex = 'auto';
+                img.style.background = 'none';
+                img.style.padding = '0';
+                imageEnlarged = false;
+            }
+        }
+        
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.href = "img/Black and Red Simple Minimalsit Formal Facebook Profile Picture.png";
+            link.download = "Ralph_Hernandez_Profile.png";
+            link.click();
+            termEffect("DOWNLOAD_INITIATED... \nFILE: Ralph_Hernandez_Profile.png \nSTATUS: SUCCESS");
+        }
+
+        // 6. Modal Functions
+        function showModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            
+            const content = {
+                personal: {
+                    title: 'PERSONAL_INFORMATION',
+                    body: `
+                        <div style="color: #e0e0e0; line-height: 1.6;">
+                            <p><strong style="color: var(--accent);">NAME:</strong> Ralph Hernandez</p>
+                            <p><strong style="color: var(--accent);">LOCATION:</strong> Manila, Philippines</p>
+                            <p><strong style="color: var(--accent);">EMAIL:</strong> ralph.hernandez@email.com</p>
+                            <p><strong style="color: var(--accent);">STATUS:</strong> 3rd Year IT Student</p>
+                            <p><strong style="color: var(--accent);">SCHOOL:</strong> University of the Philippines</p>
+                            <p><strong style="color: var(--accent);">EXPECTED GRADUATION:</strong> 2025</p>
+                            <p><strong style="color: var(--accent);">GPA:</strong> 3.5/4.0</p>
+                        </div>
+                    `
+                },
+                certifications: {
+                    title: 'CERTIFICATIONS',
+                    body: `
+                        <div style="color: #e0e0e0; line-height: 1.8;">
+                            <div style="margin-bottom: 15px; padding: 10px; border-left: 3px solid var(--accent);">
+                                <strong style="color: var(--accent);">Oracle Certified Associate Java SE</strong><br>
+                                <small style="color: #888;">Oracle | In Progress</small>
+                            </div>
+                            <div style="margin-bottom: 15px; padding: 10px; border-left: 3px solid var(--accent);">
+                                <strong style="color: var(--accent);">Web Development Fundamentals</strong><br>
+                                <small style="color: #888;">FreeCodeCamp | 2023</small>
+                            </div>
+                            <div style="margin-bottom: 15px; padding: 10px; border-left: 3px solid var(--accent);">
+                                <strong style="color: var(--accent);">Database Design Certificate</strong><br>
+                                <small style="color: #888;">Coursera | 2023</small>
+                            </div>
+                        </div>
+                    `
+                },
+                skills: {
+                    title: 'TECHNICAL_SKILLS',
+                    body: `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; color: #e0e0e0;">
+                            <div>
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">FRONTEND</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>▹ HTML5 / CSS3</li>
+                                    <li>▹ JavaScript (ES6+)</li>
+                                    <li>▹ Bootstrap</li>
+                                    <li>▹ jQuery</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">BACKEND</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>▹ Java (Core & OOP)</li>
+                                    <li>▹ PHP</li>
+                                    <li>▹ Basic REST APIs</li>
+                                    <li>▹ XAMPP/WAMP</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">DATABASE</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>▹ MySQL</li>
+                                    <li>▹ SQL Queries</li>
+                                    <li>▹ Database Design</li>
+                                    <li>▹ phpMyAdmin</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">TOOLS</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>▹ Git / GitHub</li>
+                                    <li>▹ VS Code</li>
+                                    <li>▹ NetBeans IDE</li>
+                                    <li>▹ Figma (Basic)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                },
+                projects: {
+                    title: 'PROJECT_PORTFOLIO',
+                    body: `
+                        <div style="color: #e0e0e0;">
+                            <div style="margin-bottom: 25px; padding: 15px; border: 1px solid var(--accent); background: rgba(0,242,255,0.05);">
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">STUDENT INFORMATION SYSTEM</h4>
+                                <p style="margin-bottom: 10px; color: #ccc;">Web-based portal for student enrollment, grades, and course management.</p>
+                                <p><strong>Tech Stack:</strong> PHP, MySQL, HTML, CSS, JavaScript</p>
+                                <p><strong>Features:</strong> User authentication, CRUD operations, Grade calculation</p>
+                            </div>
+                            <div style="margin-bottom: 25px; padding: 15px; border: 1px solid var(--accent); background: rgba(0,242,255,0.05);">
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">INVENTORY MANAGEMENT SYSTEM</h4>
+                                <p style="margin-bottom: 10px; color: #ccc;">Desktop application for tracking products, suppliers, and stock levels.</p>
+                                <p><strong>Tech Stack:</strong> Java Swing, MySQL, JDBC</p>
+                                <p><strong>Features:</strong> Product tracking, Stock alerts, Report generation</p>
+                            </div>
+                            <div style="margin-bottom: 25px; padding: 15px; border: 1px solid var(--accent); background: rgba(0,242,255,0.05);">
+                                <h4 style="color: var(--accent); margin-bottom: 10px;">LIBRARY MANAGEMENT SYSTEM</h4>
+                                <p style="margin-bottom: 10px; color: #ccc;">Simple system for managing book borrowing and returns.</p>
+                                <p><strong>Tech Stack:</strong> PHP, MySQL, Bootstrap, jQuery</p>
+                                <p><strong>Features:</strong> Book catalog, Member management, Due date tracking</p>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+            
+            title.textContent = content[type].title;
+            body.innerHTML = content[type].body;
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // 7. Tactical Map Background
+        const canvas = document.getElementById('map-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+ 
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#00f2ff";
+            ctx.lineWidth = 0.5;
+            // Draw grid
+            for(let i=0; i<canvas.width; i+=100) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let i=0; i<canvas.height; i+=100) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+            }
+            // Draw random "pings"
+            ctx.fillStyle = "#00f2ff";
+            for(let i=0; i<5; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 2, 0, Math.PI*2);
+                ctx.fill();
+            }
+            setTimeout(() => requestAnimationFrame(drawMap), 1000);
+        }
+        drawMap();
+    </script>
+</body>
+</html>

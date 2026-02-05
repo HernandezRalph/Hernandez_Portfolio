@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ralph Hernandez - Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: #0a0a0a; 
+            color: #e0e0e0; 
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: #1a1a1a; 
+            padding: 50px; 
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+        }
+        header { 
+            text-align: center; 
+            border-bottom: 3px solid #00f2ff; 
+            padding-bottom: 30px; 
+            margin-bottom: 40px;
+        }
+        h1 { 
+            font-size: 3rem; 
+            color: #00f2ff; 
+            font-weight: 700; 
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        .title { 
+            font-size: 1.3rem; 
+            color: #ffffff; 
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .contact { 
+            font-size: 1rem; 
+            color: #b0b0b0; 
+            margin-top: 10px;
+        }
+        .contact a { 
+            color: #00f2ff; 
+            text-decoration: none; 
+            margin: 0 10px;
+        }
+        .contact a:hover { text-decoration: underline; }
+        
+        section { margin-bottom: 40px; }
+        h2 { 
+            font-size: 1.8rem; 
+            color: #00f2ff; 
+            border-left: 5px solid #00f2ff; 
+            padding-left: 15px; 
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .job, .education-item, .project { 
+            margin-bottom: 25px; 
+            padding: 20px;
+            background: #0f0f0f;
+            border-left: 3px solid #00f2ff;
+        }
+        .job h3, .education-item h3, .project h3 { 
+            font-size: 1.4rem; 
+            color: #ffffff; 
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .job .meta, .education-item .meta { 
+            font-size: 1rem; 
+            color: #00f2ff; 
+            margin-bottom: 10px;
+        }
+        .job ul, .project ul { 
+            margin-left: 20px; 
+            margin-top: 10px;
+        }
+        .job li, .project li { 
+            margin-bottom: 8px; 
+            color: #d0d0d0;
+            font-size: 1.05rem;
+        }
+        .skills-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px;
+        }
+        .skill-category { 
+            background: #0f0f0f; 
+            padding: 20px; 
+            border: 1px solid #00f2ff;
+        }
+        .skill-category h4 { 
+            color: #00f2ff; 
+            margin-bottom: 12px; 
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .skill-category ul { 
+            list-style: none; 
+        }
+        .skill-category li { 
+            padding: 5px 0; 
+            color: #e0e0e0;
+            font-size: 1.05rem;
+        }
+        .skill-category li:before { 
+            content: "▹ "; 
+            color: #00f2ff; 
+            font-weight: bold;
+        }
+        .btn-back { 
+            display: inline-block; 
+            margin-top: 30px; 
+            padding: 12px 30px; 
+            background: transparent; 
+            color: #00f2ff; 
+            border: 2px solid #00f2ff; 
+            text-decoration: none; 
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-back:hover { 
+            background: #00f2ff; 
+            color: #000; 
+        }
+        @media print {
+            body { background: white; color: black; }
+            .container { border: none; box-shadow: none; }
+            .btn-back { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RALPH HERNANDEZ</h1>
+            <div class="title">3rd Year IT Student</div>
+            <div class="contact">
+                <a href="mailto:ralph@example.com">hernandez16ralph13@gmail.com</a> |
+                <a href="tel:+63 9954121712">+63 9954121712</a> |
+                <a href="https://github.com/HernandezRalph" target="_blank">GitHub</a> |
+                <a href="https://linkedin.com/in/ralph-lemuel-hernandez" target="_blank">LinkedIn</a>
+            </div>
+        </header>
+
+        <section>
+            <h2>ACADEMIC SUMMARY</h2>
+            <p style="font-size: 1.1rem; color: #d0d0d0; line-height: 1.8;">
+                3rd Year Information Technology student with strong foundation in programming and web development. 
+                Experienced in Java, PHP, and database management. Passionate about creating efficient solutions 
+                and continuously learning new technologies through academic projects and self-study.
+            </p>
+        </section>
+
+        <section>
+            <h2>TECHNICAL SKILLS</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h4>Programming</h4>
+                    <ul>
+                        <li>Java (Core & OOP)</li>
+                        <li>JavaScript (ES6+)</li>
+                        <li>PHP</li>
+                        <li>HTML5 / CSS3</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Web Development</h4>
+                    <ul>
+                        <li>Bootstrap Framework</li>
+                        <li>jQuery</li>
+                        <li>Responsive Design</li>
+                        <li>XAMPP/WAMP</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Database</h4>
+                    <ul>
+                        <li>MySQL</li>
+                        <li>SQL Queries</li>
+                        <li>Database Design</li>
+                        <li>phpMyAdmin</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Tools & IDEs</h4>
+                    <ul>
+                        <li>NetBeans IDE</li>
+                        <li>VS Code</li>
+                        <li>Git / GitHub</li>
+                        <li>Figma (Basic)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>ACADEMIC PROJECTS</h2>
+            
+            <div class="job">
+                <h3>Student Information System</h3>
+                <div class="meta">Academic Project | 2023</div>
+                <ul>
+                    <li>Developed web-based system for student enrollment and grade management</li>
+                    <li>Implemented user authentication and role-based access control</li>
+                    <li>Created responsive interface using HTML, CSS, and JavaScript</li>
+                    <li>Integrated MySQL database for data storage and retrieval</li>
+                </ul>
+            </div>
+
+            <div class="job">
+                <h3>Inventory Management System</h3>
+                <div class="meta">Academic Project | 2023</div>
+                <ul>
+                    <li>Built desktop application using Java Swing for GUI development</li>
+                    <li>Implemented CRUD operations for product and supplier management</li>
+                    <li>Designed normalized database schema with proper relationships</li>
+                    <li>Added stock alert features and basic reporting functionality</li>
+                </ul>
+            </div>
+
+            <div class="job">
+                <h3>Library Management System</h3>
+                <div class="meta">Academic Project | 2022</div>
+                <ul>
+                    <li>Created web application for book borrowing and return tracking</li>
+                    <li>Used PHP and MySQL for backend development</li>
+                    <li>Implemented Bootstrap for responsive design</li>
+                    <li>Added member registration and due date management features</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>EDUCATION</h2>
+            <div class="education-item">
+                <h3>Bachelor of Science in Information Technology</h3>
+                <div class="meta">University of the Philippines | 2022 - Present (3rd Year)</div>
+                <p style="margin-top: 10px; color: #d0d0d0;">Current GPA: 3.5/4.0</p>
+                <p style="color: #d0d0d0;">Relevant Coursework: Data Structures, Database Systems, Web Development, Object-Oriented Programming</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>CERTIFICATIONS & ACHIEVEMENTS</h2>
+            <div style="padding: 20px; background: #0f0f0f; border-left: 3px solid #00f2ff;">
+                <ul style="margin-left: 20px;">
+                    <li style="margin-bottom: 8px; color: #d0d0d0; font-size: 1.05rem;">Web Development Fundamentals - FreeCodeCamp (2023)</li>
+                    <li style="margin-bottom: 8px; color: #d0d0d0; font-size: 1.05rem;">Database Design Certificate - Coursera (2023)</li>
+                    <li style="margin-bottom: 8px; color: #d0d0d0; font-size: 1.05rem;">Oracle Certified Associate Java SE (In Progress)</li>
+                    <li style="margin-bottom: 8px; color: #d0d0d0; font-size: 1.05rem;">Dean's List - 2nd Year (2023)</li>
+                </ul>
+            </div>
+        </section>
+
+        <a href="portfolio.html" class="btn-back">← BACK TO PORTFOLIO</a>
+    </div>
+</body>
+</html>
